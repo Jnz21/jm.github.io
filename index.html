@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bid Calculation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            margin-bottom: 10px;
+        }
+
+        #result {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .product-row {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .delete-button {
+            cursor: flex;
+            color: red;
+            margin-left: auto;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .input-group input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tarjouslaskuri</h1>
+
+    <div id="productContainer">
+        <!-- Initial product row -->
+        <div class="product-row">
+            <div class="input-group">
+                <label for="quantity">Määrä:</label>
+                <input type="number" class="quantity" min="0" value="">
+            </div>
+
+            <div class="input-group">
+                <label for="unitPrice">Yksikköhinta:</label>
+                <input type="number" class="unitPrice" min="0" step="0.01" value="">
+            </div>
+
+            <button onclick="deleteProduct(this)">X</button>
+        </div>
+    </div>
+
+    <button onclick="calculateBid()">Laske</button>
+    <button onclick="addNewProduct()">Lisää uusi tuoterivi</button>
+
+    <div id="result"></div>
+
+    <script>
+        function calculateBid() {
+            // Get all product rows
+            var productRows = document.getElementsByClassName('product-row');
+
+            var totalBid = 0;
+
+            // Calculate bid for each product row
+            for (var i = 0; i < productRows.length; i++) {
+                var quantity = parseFloat(productRows[i].querySelector('.quantity').value);
+                var unitPrice = parseFloat(productRows[i].querySelector('.unitPrice').value);
+
+                // Check if values are valid
+                if (!isNaN(quantity) && !isNaN(unitPrice) && quantity >= 0 && unitPrice >= 0) {
+                    totalBid += quantity * unitPrice;
+                }
+            }
+
+            // Display result
+            document.getElementById('result').innerHTML = 'Tarjouksen kokonaishinta: ' + totalBid.toFixed(2) + '€';
+        }
+
+        function addNewProduct() {
+            // Clone the template product row
+            var templateRow = document.querySelector('.product-row');
+            var newProductRow = templateRow.cloneNode(true);
+
+            // Clear input values in the new row
+            newProductRow.querySelector('.quantity').value = "";
+            newProductRow.querySelector('.unitPrice').value = "";
+
+            // Add delete button to the new row
+            var deleteButton = document.createElement('span');
+            deleteButton.className = 'delete-button';
+            deleteButton.innerHTML = 'X';
+            deleteButton.onclick = function() { deleteProduct(this); };
+            newProductRow.appendChild(deleteButton);
+
+            // Append the new row to the container
+            document.getElementById('productContainer').appendChild(newProductRow);
+        }
+
+        function deleteProduct(button) {
+            // Remove the corresponding product row
+            var productRow = button.parentElement;
+            productRow.parentElement.removeChild(productRow);
+        }
+    </script>
+</body>
+</html>
